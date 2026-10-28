@@ -1,0 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Orbitron:wght@500;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#0a0c10;--surface:#12151c;--surface2:#1a1f2b;--surface3:#222838;
+  --accent:#00e5ff;--accent2:#ff6b35;--danger:#ff3b3b;
+  --text:#e8eaf0;--text2:#8899aa;--border:#2a3344;
+  --gold:#ffd700;--green:#00e676;--radius:6px;
+  --font:'Rajdhani',sans-serif;--mono:'Share Tech Mono',monospace;
+}
+html,body,#root{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;}
+button{font-family:var(--font);cursor:pointer;border:none;outline:none;user-select:none;}
+input,select,textarea{font-family:var(--font);outline:none;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}

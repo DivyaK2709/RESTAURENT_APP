@@ -1,0 +1,139 @@
+═══════════════════════════════════════════════════════════════
+ YNOT POS — SETUP ON THIS COMPUTER
+═══════════════════════════════════════════════════════════════
+
+───────────────────────────────────────────────────────────────
+ STEP 1 — COPY THIS FOLDER
+───────────────────────────────────────────────────────────────
+Copy this whole folder anywhere on the PC, e.g.:
+  C:\YNOT-POS\
+
+
+───────────────────────────────────────────────────────────────
+ STEP 2 — SET UP SQL SERVER
+───────────────────────────────────────────────────────────────
+Make sure SQL Server is installed on this PC (or reachable on the
+network) with:
+  - TCP/IP enabled (SQL Server Configuration Manager)
+  - "SQL Server and Windows Authentication mode" enabled
+  - The 'sa' login enabled with a password set
+  - Port 1433 allowed through Windows Firewall
+
+
+───────────────────────────────────────────────────────────────
+ STEP 3 — CONFIGURE (edit 1 file, run it once)
+───────────────────────────────────────────────────────────────
+1. Right-click  1_setup-registry.reg  -> Edit (opens in Notepad)
+2. Fill in for THIS site:
+     - DB_SERVER     (e.g. localhost\YNOT)
+     - DB_PASSWORD   (the sa password you set in Step 2)
+     - PRINTER1_IP   (network printer's IP — check on the printer)
+     - PRINTER2_PORT / PRINTER3_PORT  (USB printer ports — check in
+       Device Manager -> Ports, e.g. USB002)
+3. Save and close Notepad.
+4. Double-click  1_setup-registry.reg
+5. Click "Yes" when Windows asks to add it to the registry.
+
+
+───────────────────────────────────────────────────────────────
+ STEP 4 — START THE BACKEND
+───────────────────────────────────────────────────────────────
+Double-click:
+  backend\ynot-pos-backend.exe
+
+A black window will open and stay open — that's normal, it's the
+server running. You should see a box confirming the database and
+printer settings it loaded.
+
+Keep this window open while the POS is in use, OR set it up to start
+automatically — see STEP 6.
+
+Test it worked: open a browser on this PC and go to
+  http://localhost:3001/api/health
+You should see something like {"status":"ok"}
+
+
+───────────────────────────────────────────────────────────────
+ STEP 5 — START THE PRINT SERVER
+───────────────────────────────────────────────────────────────
+Double-click:
+  print-server\ynot-pos-printserver.exe
+
+Same as above — a window opens and stays running.
+
+
+───────────────────────────────────────────────────────────────
+ STEP 6 — (RECOMMENDED) MAKE THEM START AUTOMATICALLY
+───────────────────────────────────────────────────────────────
+So you don't need to double-click the .exe files every time the PC
+restarts, install them as Windows services (one-time setup):
+
+  1. Open Command Prompt
+  2. cd to the backend folder, e.g.:
+       cd C:\YNOT-POS\backend
+  3. Run:
+       npm install node-windows
+       node service-exe.js
+  4. Repeat for the print server:
+       cd C:\YNOT-POS\print-server
+       npm install node-windows
+       node install-print-service-exe.js
+
+After this, both run automatically in the background whenever the PC
+starts — no need to keep a window open. (This step needs internet once,
+to download node-windows.)
+
+
+───────────────────────────────────────────────────────────────
+ STEP 7 — FIREWALL
+───────────────────────────────────────────────────────────────
+Allow these through Windows Firewall on this PC:
+  - Port 3001 (backend)
+  - Port 6543 (print server)
+  - Port 1433 (SQL Server, only if it's on a different PC)
+
+
+───────────────────────────────────────────────────────────────
+ STEP 8 — CONNECT THE APP / TABLET / PHONE
+───────────────────────────────────────────────────────────────
+Find this PC's IP address: open Command Prompt, type `ipconfig`,
+note the IPv4 Address (e.g. 192.168.1.50).
+
+On each phone/tablet running the POS app:
+  - First time opening it: it asks for the Server IP — enter this PC's
+    IP address.
+  - Already set up before? Open the app -> Login screen -> "⚙️ CHANGE IP"
+    (or Setup -> "🌐 Server Connection") and enter the new IP.
+
+The phone/tablet and this PC must be on the same WiFi network.
+
+
+───────────────────────────────────────────────────────────────
+ LOGIN
+───────────────────────────────────────────────────────────────
+  Username: admin
+  Password: admin
+
+Change this after first login: Setup -> Users.
+
+
+───────────────────────────────────────────────────────────────
+ TROUBLESHOOTING
+───────────────────────────────────────────────────────────────
+"Cannot connect to server" on phone/tablet
+  -> Make sure ynot-pos-backend.exe is running on this PC
+  -> Make sure phone/tablet is on the same WiFi
+  -> Check firewall allows port 3001
+
+Backend window shows a database error
+  -> Re-check DB_SERVER and DB_PASSWORD in 1_setup-registry.reg, then
+     re-run it (double-click again) and restart ynot-pos-backend.exe
+
+Printer not printing
+  -> Check PRINTER1_IP / PRINTER2_PORT / PRINTER3_PORT in
+     1_setup-registry.reg match the actual printer
+  -> Re-run the .reg file and restart ynot-pos-printserver.exe
+
+Windows shows a security warning when you run the .exe
+  -> Click "More info" -> "Run anyway". This is normal for new
+     software that isn't yet recognized by Windows.

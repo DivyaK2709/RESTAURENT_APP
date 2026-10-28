@@ -1,0 +1,60 @@
+Step 1 — Find the New Server's IP Address
+Step 2 — Install Software on the New PC
+    1. Node.js v18+
+Print install; it
+    2.After installing, verify Node.js works — open Command Prompt and run:
+               2.1.node --version
+                       result will be show something like v18.x.x or higher.
+step3-Windows Firewall ? Inbound Rules ? New Rule ? Port 1433 ? Allow
+       inside sql server configuration manager that the port will be 1433 and dynamic port will be empty
+Step 4 — Copy Project Files to the New PC
+Step 5 — Update the Registry on the New PC
+     Easy way — edit and run the .reg file
+      1.Go to your copied project folder ? find the file:
+              1_setup-registry.reg
+      2.Right-click it ? Open with Notepad
+      3.Change these values:
+                "DB_SERVER"="YOUR_NEW_IP\\SQLEXPRESS"
+                "DB_PASSWORD"="your sa password you set in Step 3"
+                "PRINTER1_IP"="your printer IP (if changed)"
+                      For example if your new IP is 192.168.1.10:
+                          "DB_SERVER"="192.168.1.10\\SQLEXPRESS"
+      4.Save the file
+      5.Double-click the .reg file ? click Yes ? click OK
+     Press Win + R ? type regedit ? navigate to:HKEY_LOCAL_MACHINE\SOFTWARE\YNOT\POS
+
+Step 6 — Install Backend & Print Server as Windows Services
+ First update the script paths in both service files.
+ 1.Open backend\service.js in Notepad and change the path:
+          // Change this:
+script:           'E:\\legend-pos-v5-ynot\\pos-app\\backend\\index.js'
+
+          // To your new PC path, e.g.:
+script:           'C:\\legend-pos\\backend\\index.js'
+ 2. Open print-server\install-print-service.js in Notepad and change:
+          // Change this:
+script:           'E:\\legend-pos-v5-ynot\\pos-app\\print-server\\print-server.js'
+
+          // To your new PC path, e.g.:
+script:           'C:\\legend-pos\\print-server\\print-server.js'
+  Then install both services — open CMD as Administrator:
+          cd C:\legend-pos\backend
+          npm install
+          node service.js
+  Then second service:
+           cd C:\legend-pos\print-server
+           npm install
+           npm install node-thermal-printer --save
+           node install-print-service.js
+   Verify in services.msc:
+     Press Win + R ? type services.msc ? look for:
+         Print YNOT; POS; Backend; —; Status: Running
+         ? YNOT POS Print Server — Status: Running
+Step 7 —download java(https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.11%2B9/OpenJDK17U-jdk_x64_windows_hotspot_17.0.11_9.msi)
+Step 8 — Rebuild the APK with New Server IP
+    1.Open CMD in the project root and run:
+            cd C:\legend-pos
+            npm install
+            npm run build
+            npx cap sync android
+            npx cap open android

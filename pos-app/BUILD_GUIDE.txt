@@ -1,0 +1,239 @@
+# ═══════════════════════════════════════════════════════════════
+#  LEGEND POS — COMPLETE SETUP & APK BUILD GUIDE
+#  Your SQL Server: 192.168.43.47  |  Database: LEGEND
+# ═══════════════════════════════════════════════════════════════
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ STEP 1 — INSTALL REQUIRED SOFTWARE ON YOUR PC
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Install these (all free):
+
+1. Node.js v18+         → https://nodejs.org  (download LTS)
+2. JDK 17               → https://adoptium.net
+3. Android Studio       → https://developer.android.com/studio
+   (Install Android SDK inside Android Studio)
+4. Git (optional)       → https://git-scm.com
+
+After installing Android Studio:
+  → Open Android Studio
+  → SDK Manager → Install "Android SDK Platform 33"
+  → Set ANDROID_HOME environment variable:
+    Windows: My PC → Properties → Advanced → Environment Variables
+    New Variable:  ANDROID_HOME = C:\Users\YourName\AppData\Local\Android\Sdk
+    Add to PATH:   %ANDROID_HOME%\tools;%ANDROID_HOME%\platform-tools
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ STEP 2 — CONFIGURE SQL SERVER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+A) Enable TCP/IP in SQL Server:
+   → Open "SQL Server Configuration Manager"
+   → SQL Server Network Configuration
+   → Protocols for MSSQLSERVER
+   → Enable "TCP/IP"
+   → Restart SQL Server service
+
+B) Enable SA login:
+   → Open SQL Server Management Studio (SSMS)
+   → Connect to DIVYA server
+   → Right-click server → Properties → Security
+   → Select "SQL Server and Windows Authentication mode"
+   → Click OK, restart SQL Server
+
+C) Set SA password:
+   → In SSMS: Security → Logins → sa → right-click → Properties
+   → Set a password (remember it!)
+   → Status tab → Login: Enabled
+
+D) Allow port 1433 in Windows Firewall:
+   → Windows Defender Firewall → Advanced Settings
+   → Inbound Rules → New Rule
+   → Port → TCP → 1433 → Allow → Name: "SQL Server 1433"
+
+E) Open backend/index.js and change line:
+   password: 'YOUR_SA_PASSWORD',
+   → Replace with your actual sa password
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ STEP 3 — EXTRACT AND SETUP PROJECT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Extract the zip to a folder, e.g.: C:\legend-pos\
+
+2. Open TWO Command Prompt windows
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ STEP 4 — START THE BACKEND
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+In CMD Window 1:
+
+  cd C:\legend-pos\backend
+  npm install
+  node index.js
+
+You should see:
+  ✅ Connected to SQL Server - LEGEND database
+  ✅ DB tables ready
+  🚀 POS Backend running at http://0.0.0.0:3001
+
+KEEP THIS WINDOW OPEN (backend must stay running)
+
+Test backend: open browser → http://localhost:3001/api/health
+Should show: {"status":"ok","db":"LEGEND"}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ STEP 5 — TEST IN BROWSER FIRST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+In CMD Window 2:
+
+  cd C:\legend-pos
+  npm install
+  npm run dev
+
+Open browser: http://localhost:5173
+Login: admin / admin
+
+Test everything works before building APK!
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ STEP 6 — BUILD REACT APP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+In CMD Window 2 (stop dev server first with Ctrl+C):
+
+  cd C:\legend-pos
+  npm run build
+
+This creates the "dist" folder.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ STEP 7 — BUILD ANDROID APK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+In CMD Window 2:
+
+  cd C:\legend-pos
+
+  :: Add Android platform
+  npx cap add android
+
+  :: Copy web files to Android project
+  npx cap sync android
+
+  :: Open in Android Studio
+  npx cap open android
+
+In Android Studio:
+  → Wait for Gradle sync to finish (2-5 min first time)
+  → Build menu → Build Bundle(s)/APK(s) → Build APK(s)
+  → Wait for build...
+  → Click "locate" when done
+  → APK is at: android\app\build\outputs\apk\debug\app-debug.apk
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ STEP 8 — INSTALL APK ON YOUR PHONE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Option A — USB cable:
+  1. Enable Developer Options on phone:
+     Settings → About Phone → tap "Build Number" 7 times
+  2. Settings → Developer Options → Enable USB Debugging
+  3. Connect phone to PC via USB
+  4. In CMD: adb install android\app\build\outputs\apk\debug\app-debug.apk
+
+Option B — WhatsApp/Email:
+  1. Send the APK file to yourself via WhatsApp
+  2. Open on phone → tap to install
+  3. Allow "Install from unknown sources" if asked
+
+Option C — Copy to phone storage:
+  1. Copy APK to phone via USB
+  2. Open file manager on phone → find APK → install
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ STEP 9 — CONNECT PHONE TO YOUR PC SERVER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+IMPORTANT: Phone and PC must be on the SAME WiFi network!
+
+Your PC IP: 192.168.43.47  (from ipconfig)
+Backend runs on port: 3001
+
+The app is already configured to connect to:
+  http://192.168.43.47:3001/api
+
+Make sure:
+  ✓ Backend (node index.js) is running on PC
+  ✓ Phone is on same WiFi as PC
+  ✓ Windows Firewall allows port 3001
+
+To allow port 3001 in firewall:
+  Windows Firewall → Advanced → Inbound Rules → New Rule
+  → Port → TCP → 3001 → Allow → Name: "POS Backend"
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ TROUBLESHOOTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Problem: "Cannot connect to server"
+  Fix: Make sure backend is running (node index.js)
+       Make sure both PC and phone on same WiFi
+       Check firewall allows port 3001
+
+Problem: "DB init failed" or SQL error
+  Fix: Check sa password in backend/index.js
+       Check SQL Server TCP/IP is enabled
+       Check port 1433 is open in firewall
+
+Problem: APK installs but shows white screen
+  Fix: Make sure backend is running
+       Check phone is on same WiFi as PC
+
+Problem: "ANDROID_HOME not set"
+  Fix: Set environment variable (see Step 1)
+       Restart CMD after setting it
+
+Problem: Gradle sync fails
+  Fix: Check internet connection
+       Android Studio → File → Invalidate Caches
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PROJECT STRUCTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+legend-pos/
+├── backend/
+│   ├── index.js          ← Node.js + Express + SQL Server
+│   └── package.json
+├── src/
+│   ├── pages/
+│   │   ├── Login.jsx     ← Login screen
+│   │   ├── Dashboard.jsx ← Main menu
+│   │   ├── POS.jsx       ← Sales screen (main POS)
+│   │   ├── Admin.jsx     ← Setup (rooms, tables, items)
+│   │   └── Reports.jsx   ← Sales reports
+│   ├── components/
+│   │   ├── Toast.jsx     ← Notifications
+│   │   └── Modal.jsx     ← Popup dialogs
+│   ├── store/
+│   │   └── api.js        ← All API calls to backend
+│   └── utils/
+│       └── helpers.js    ← Receipt/KOT builder
+├── capacitor.config.json ← Android/iOS config
+├── vite.config.js
+└── package.json
+
+LOGIN: admin / admin  (or cashier1 / 1234)

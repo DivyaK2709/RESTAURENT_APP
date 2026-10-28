@@ -1,0 +1,3 @@
+1.Open C:\legend-pos-CLIENT\nssm-2.24\win64\ (use win32 only if this is a 32-bit Windows install, which is rare nowadays) and confirm nssm.exe is there.
+2.nssm install "YNOT POS Backend" "C:\legend-pos-CLIENT\backend\ynot-pos-backend.exe" and press Enter
+3.nssm install "YNOT POS Print Server" "C:\legend-pos-CLIENT\print-server\ynot-pos-printserver.exe"

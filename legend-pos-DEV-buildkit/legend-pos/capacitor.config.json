@@ -1,0 +1,14 @@
+{
+  "appId": "com.legend.restaurantpos",
+  "appName": "Legend POS",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "http",
+    "cleartext": true,
+    "allowNavigation": ["*"]
+  },
+  "android": {
+    "allowMixedContent": true,
+    "backgroundColor": "#0a0c10"
+  }
+}

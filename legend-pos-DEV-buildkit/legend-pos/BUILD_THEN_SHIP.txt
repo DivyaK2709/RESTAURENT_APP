@@ -1,0 +1,110 @@
+═══════════════════════════════════════════════════════════════
+ BUILD ONCE (your PC) -> SHIP ONLY THE .EXE (client PC)
+═══════════════════════════════════════════════════════════════
+This turns your backend and print-server into standalone .exe files
+using "pkg". The client receives compiled .exe files + a .reg file.
+They never see index.js, print-server.js, or any of your source code.
+
+Do ALL of this on YOUR development PC (needs internet for npm install).
+The client machine only needs the files listed in STEP 4.
+
+
+───────────────────────────────────────────────────────────────
+ STEP 1 — INSTALL DEPENDENCIES (your PC, one time)
+───────────────────────────────────────────────────────────────
+  cd legend-pos\backend
+  npm install
+
+  cd ..\print-server
+  npm install
+
+This also installs "pkg" as a devDependency (already added to both
+package.json files).
+
+
+───────────────────────────────────────────────────────────────
+ STEP 2 — BUILD THE BACKEND .EXE
+───────────────────────────────────────────────────────────────
+  cd legend-pos\backend
+  npm run build:exe
+
+This creates:
+  legend-pos\backend\dist-exe\ynot-pos-backend.exe
+
+This single file contains your Node.js runtime + all your backend code,
+compiled. It does NOT include registry-config.js as readable source —
+it's bundled inside the binary.
+
+
+───────────────────────────────────────────────────────────────
+ STEP 3 — BUILD THE PRINT SERVER .EXE
+───────────────────────────────────────────────────────────────
+  cd legend-pos\print-server
+  npm run build:exe
+
+This creates:
+  legend-pos\print-server\dist-exe\ynot-pos-printserver.exe
+
+
+───────────────────────────────────────────────────────────────
+ STEP 4 — ASSEMBLE THE CLIENT PACKAGE (what you actually send)
+───────────────────────────────────────────────────────────────
+Create a new empty folder, e.g. "legend-pos-CLIENT", and copy ONLY
+these files into it — nothing else from your dev project:
+
+  legend-pos-CLIENT/
+  ├── 1_setup-registry.reg          <- from project root
+  ├── SETUP_CLIENT.txt              <- from project root (client-facing guide)
+  ├── backend/
+  │   ├── ynot-pos-backend.exe      <- from backend/dist-exe/
+  │   └── service-exe.js            <- from backend/  (optional, for auto-start)
+  ├── print-server/
+  │   ├── ynot-pos-printserver.exe  <- from print-server/dist-exe/
+  │   └── install-print-service-exe.js  <- from print-server/  (optional)
+  └── dist/                         <- the prebuilt frontend (whole folder,
+                                        from project root dist/) — this is
+                                        already just compiled HTML/CSS/JS,
+                                        not your readable React source
+
+That's it. No index.js, no print-server.js, no registry-config.js, no
+src/*.jsx, no package.json/node_modules. Zip "legend-pos-CLIENT" and
+send that.
+
+NOTE on the frontend: if the client is using the Android APK (built via
+Capacitor), you don't even need the dist/ folder — just send the .apk
+file you built earlier. Only include dist/ if they're going to serve the
+web app directly (e.g. opening it in a browser/kiosk).
+
+
+───────────────────────────────────────────────────────────────
+ STEP 5 — REBUILDING LATER
+───────────────────────────────────────────────────────────────
+Whenever you change backend/index.js or print-server/print-server.js,
+repeat Steps 2–4 and send the client an updated .exe — they just replace
+the old .exe file (stop the service first if it's running, copy the new
+.exe over, restart the service).
+
+
+───────────────────────────────────────────────────────────────
+ TROUBLESHOOTING THE BUILD
+───────────────────────────────────────────────────────────────
+"pkg: command not found"
+  -> Run `npm install` in that folder first (installs pkg locally),
+     then use `npm run build:exe` (not `pkg` directly).
+
+Antivirus flags the .exe / Windows SmartScreen warning on client PC
+  -> Common with pkg-built executables since they're unsigned. This is
+     a false positive. Options: code-sign the exe (paid cert), or add
+     an exclusion on the client PC, or have them click "More info ->
+     Run anyway" on first launch.
+
+.exe runs but can't find "1_setup-registry.reg" values
+  -> The registry isn't read from a file path — it's read from Windows
+     Registry directly via `reg query`. Make sure you actually
+     double-clicked the .reg file on the CLIENT machine (not just
+     placed it next to the exe).
+
+.exe closes immediately / crashes on start
+  -> Run it from a Command Prompt (not double-click) so you can see the
+     error message: cd to its folder, run `ynot-pos-backend.exe`,
+     read the console output.

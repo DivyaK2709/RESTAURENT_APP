@@ -1,0 +1,59 @@
+Windows Registry Editor Version 5.00
+
+; ============================================================================
+;  YNOT POS — Machine Configuration
+; ============================================================================
+;  Double-click this file on the NEW machine to install it. Windows will ask
+;  "Are you sure you want to add this information to the registry?" -> Yes.
+;
+;  BEFORE double-clicking: edit the values below in Notepad to match the new
+;  machine's network / SQL Server / printers. Every value here is a fallback
+;  default inside the app too, so if you skip a line the app keeps working
+;  with its built-in default — but for a real client install you should set
+;  all of them correctly.
+;
+;  Run this on BOTH the backend machine and the print-server machine if they
+;  are different PCs. If everything runs on a single PC, run it once.
+; ============================================================================
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\YNOT\POS]
+
+; ---- SQL Server ------------------------------------------------------------
+; DB_SERVER: hostname\instance OR IP\instance of the SQL Server for this client.
+; If SQL Server is on the SAME PC as the backend, "localhost\YNOT" or
+; "localhost\SQLEXPRESS" (check your instance name in SSMS) usually works.
+"DB_SERVER"="localhost\\YNOT"
+"DB_NAME"="LEGEND"
+"DB_USER"="sa"
+"DB_PASSWORD"="CHANGE_ME"
+
+; ---- Backend ----------------------------------------------------------------
+"BACKEND_PORT"="3001"
+
+; ---- Print server -------------------------------------------------------
+"PRINT_SERVER_PORT"="6543"
+
+; ---- Printer 1 — Network thermal printer (KOT / food, colorId 1) -----------
+"PRINTER1_IP"="192.168.1.200"
+"PRINTER1_PORT"="9100"
+"PRINTER1_COLORIDS"="1"
+
+; ---- Printer 2 — USB KOT printer --------------------------------------------
+"PRINTER2_NAME"="POS-80"
+"PRINTER2_PORT"="USB002"
+"PRINTER2_COLORIDS"="2"
+
+; ---- Printer 3 — USB Bill printer (no colorIds — bill only) ----------------
+"PRINTER3_NAME"="POS-80C"
+"PRINTER3_PORT"="USB018"
+
+; ---- Printer 4 — Optional 2nd network KOT printer (colorId 3) --------------
+; Leave as 0.0.0.0 / blank colorIds if this client only has one KOT printer.
+"PRINTER4_IP"="0.0.0.0"
+"PRINTER4_PORT"="9100"
+"PRINTER4_COLORIDS"=""
+
+; ---- Printer 5 — Optional 3rd network KOT printer (colorId 4) --------------
+"PRINTER5_IP"="0.0.0.0"
+"PRINTER5_PORT"="9100"
+"PRINTER5_COLORIDS"=""

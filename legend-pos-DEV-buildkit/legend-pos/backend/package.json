@@ -1,0 +1,25 @@
+{
+  "name": "pos-backend",
+  "version": "1.0.0",
+  "description": "Restaurant POS Backend - SQL Server",
+  "main": "index.js",
+  "bin": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "build:exe": "pkg index.js --targets node18-win-x64 --output dist-exe/ynot-pos-backend.exe"
+  },
+  "pkg": {
+    "outputPath": "dist-exe"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "mssql": "^10.0.4",
+    "node-windows": "^1.0.0-beta.8"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0",
+    "pkg": "^5.8.1"
+  }
+}

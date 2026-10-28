@@ -1,0 +1,27 @@
+{
+  "name": "print-server",
+  "version": "1.0.0",
+  "description": "Thermal printer bridge",
+  "main": "print-server.js",
+  "bin": "print-server.js",
+  "scripts": {
+    "start": "node print-server.js",
+    "build:exe": "pkg print-server.js --targets node18-win-x64 --output dist-exe/ynot-pos-printserver.exe"
+  },
+  "pkg": {
+    "outputPath": "dist-exe"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "node-thermal-printer": "^4.6.0",
+    "node-windows": "^1.0.0-beta.8"
+  },
+  "devDependencies": {
+    "pkg": "^5.8.1"
+  }
+}
